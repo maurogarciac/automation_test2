@@ -36,6 +36,15 @@
         <version>7.3.4</version>
     </dependency> 
 
+        <!-- https://mvnrepository.com/artifact/org.testng/testng -->
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      
+      <scope>test</scope>
+    </dependency>
+
+
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
@@ -193,6 +202,16 @@
   
 
     <dependencies>
+
+      <dependency>
+        <groupId>org.testng</groupId>
+        <artifactId>testng</artifactId>
+        <version>7.5</version>
+      </dependency>
+
+
+      
+
 
       <dependency>
         <groupId>com.beust</groupId>

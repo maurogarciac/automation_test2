@@ -1,12 +1,15 @@
 package steps;
 
 import io.cucumber.java.en.*;
+import pages.GoogleHomePage;
 
 public class GoogleSteps {
     
     @Given("^Google search is loaded$")
     public void googleInstance(){
-
+        String currentPage = "www.google.com"; 
+        GoogleHomePage.navigateTo(currentPage);
+        
     }
 
     @When("^I search for '{value}'$")
