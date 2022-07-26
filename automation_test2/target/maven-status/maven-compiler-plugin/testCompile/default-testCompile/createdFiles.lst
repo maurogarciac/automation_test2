@@ -1,3 +1,5 @@
-runner\Runner.class
-pages\GoogleHomePage.class
-steps\GoogleSteps.class
+com\mauroooo\pages\GoogleHomePage.class
+com\mauroooo\scripts\CustomExpectedConditions.class
+com\mauroooo\steps\GoogleSteps.class
+com\mauroooo\pages\GoogleSearchResultPage.class
+com\mauroooo\scripts\CustomExpectedConditions$1.class

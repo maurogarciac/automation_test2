@@ -1,3 +1,4 @@
-f:\COSAS IMPORTANTES\SCRIPSTSTSTSTS\ENVS\automation_test2\automation_test2\src\test\java\pages\GoogleHomePage.java
-f:\COSAS IMPORTANTES\SCRIPSTSTSTSTS\ENVS\automation_test2\automation_test2\src\test\java\steps\GoogleSteps.java
-f:\COSAS IMPORTANTES\SCRIPSTSTSTSTS\ENVS\automation_test2\automation_test2\src\test\java\runner\Runner.java
+f:\COSAS IMPORTANTES\SCRIPSTSTSTSTS\ENVS\automation_test2\automation_test2\src\test\java\com\mauroooo\scripts\CustomExpectedConditions.java
+f:\COSAS IMPORTANTES\SCRIPSTSTSTSTS\ENVS\automation_test2\automation_test2\src\test\java\com\mauroooo\pages\GoogleHomePage.java
+f:\COSAS IMPORTANTES\SCRIPSTSTSTSTS\ENVS\automation_test2\automation_test2\src\test\java\com\mauroooo\pages\GoogleSearchResultPage.java
+f:\COSAS IMPORTANTES\SCRIPSTSTSTSTS\ENVS\automation_test2\automation_test2\src\test\java\com\mauroooo\steps\GoogleSteps.java

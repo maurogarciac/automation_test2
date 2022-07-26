@@ -10,6 +10,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
+
 import com.mauroooo.pages.GoogleHomePage;
 import com.mauroooo.pages.GoogleSearchResultPage;
 
