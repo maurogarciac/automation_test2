@@ -17,6 +17,7 @@ import com.mauroooo.pages.GoogleSearchResultPage;
 public class GoogleSteps {
     protected WebDriver driver;
     protected String valueName;
+    protected int linkAmount;
 
     GoogleHomePage homePage = new GoogleHomePage(driver);
     GoogleSearchResultPage resultPage = new GoogleSearchResultPage(driver);
@@ -48,7 +49,7 @@ public class GoogleSteps {
     
     @Then("^There are at least {amount:d} links that result from it are saved$")
     public void saveLinks(int amount){
-        
+        this.linkAmount = amount;
         List<String> links = resultPage.findLinks(amount);
 
         int iter = amount + 1;

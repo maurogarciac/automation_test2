@@ -15,25 +15,25 @@
     <maven-javadoc-plugin.version>3.0.0</maven-javadoc-plugin.version>
   </properties>
   <dependencies>
-    <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-testng 
+    <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-testng -->
     <dependency>
       <groupId>io.cucumber</groupId>
       <artifactId>cucumber-testng</artifactId>
       <version>7.3.4</version>
-    </dependency> -->
+    </dependency>
     <dependency>
-        <groupId>io.cucumber</groupId>
-        <artifactId>cucumber-java</artifactId>
-        <version>7.3.4</version>
-    </dependency> 
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-java</artifactId>
+      <version>7.3.4</version>
+    </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.testng/testng
+    <!-- https://mvnrepository.com/artifact/org.testng/testng -->
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
       <version>7.1.0</version>
       <scope>test</scope>
-    </dependency> -->
+    </dependency>
 
 
     <dependency>
@@ -43,10 +43,10 @@
     </dependency>
 
     <dependency>
-        <groupId>io.github.bonigarcia</groupId>
-        <artifactId>webdrivermanager</artifactId>
-        <version>5.2.0</version>
-        <scope>test</scope>
+      <groupId>io.github.bonigarcia</groupId>
+      <artifactId>webdrivermanager</artifactId>
+      <version>5.2.0</version>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>

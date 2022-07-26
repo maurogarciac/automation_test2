@@ -20,29 +20,28 @@ public class CustomExpectedConditions {
     *
     * @param locator used to find the elements
     * @param number used to determine the number of elements to find
-    * @return the list of WebElements once they are located
+    * @return the list of the first N visible WebElements in DOM order
     */
-    public static ExpectedCondition<List<WebElement>> visibilityOfNElementsLocated(By locator, int number){
+    public static ExpectedCondition<List<WebElement>> visibilityOfAtLeastNElementsLocated(By locator, int number){
+        if(number <= 0){
+            throw new IllegalArgumentException("The number of elements to find must be larger than 0");
+        }
+        
         return new ExpectedCondition<List<WebElement>>() {
             @Override
             public List<WebElement> apply(WebDriver driver) {
                 List<WebElement> elements = driver.findElements(locator);
+                List<WebElement> results = new ArrayList<WebElement>(number);
+
                 for (WebElement element : elements) {
-                    if (!element.isDisplayed()) {
-                    return null;
+                    if (results.size() >= number){
+                        return results;
+                    }
+                    if (element.isDisplayed()) {
+                        results.add(element);
                     }
                 }
-                List<WebElement> result = new ArrayList<WebElement>();
-                for (WebElement element : elements){
-                    if (elements.size() >= number){
-                        int iter = number;
-                        while (iter >= 0){
-                            iter--;
-                            result.add(element);
-                        }
-                    }else{result = null;}
-                }
-                return result;
+                return null;
             }
       
             @Override
