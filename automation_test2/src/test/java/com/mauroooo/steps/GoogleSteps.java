@@ -1,4 +1,4 @@
-package steps;
+package com.mauroooo.steps;
 
 import org.openqa.selenium.WebDriver;
 
@@ -8,12 +8,13 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import javafx.beans.value.WeakChangeListener;
-import pages.GoogleHomePage;
+import com.mauroooo.pages.GoogleHomePage;
 
 public class GoogleSteps {
     protected WebDriver driver;
-
+    
+    GoogleHomePage homePage = new GoogleHomePage(driver);
+    
     @Before()
     public void beforeScenario(){
         WebDriverManager manager = WebDriverManager.firefoxdriver();
@@ -27,13 +28,14 @@ public class GoogleSteps {
     
     @Given("^Google search is loaded$")
     public void googleInstance(){
-        String currentPage = "www.google.com"; 
-        GoogleHomePage.navigate();
-        GoogleHomePage homePage = new GoogleHomePage(driver);
+        homePage.navigate(driver);
+        
     }
 
     @When("^I search for '{value}'$")
     public void searchFor(String value){
+        homePage.search(value);
+
 
     }
     

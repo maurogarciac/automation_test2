@@ -1,4 +1,4 @@
-package pages;
+package com.mauroooo.pages;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -19,7 +19,7 @@ public class GoogleHomePage {
         PageFactory.initElements(driver, this);
     }
 
-    public static void navigate(WebDriver driver){
+    public void navigate(WebDriver driver){
         driver.get(URL);
     }
 
