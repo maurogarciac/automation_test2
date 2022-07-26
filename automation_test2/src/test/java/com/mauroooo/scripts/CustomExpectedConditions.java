@@ -1,6 +1,7 @@
 package com.mauroooo.scripts;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -31,7 +32,7 @@ public class CustomExpectedConditions {
                     return null;
                     }
                 }
-                List<WebElement> result = new List<WebElement>();
+                List<WebElement> result = new ArrayList<WebElement>();
                 for (WebElement element : elements){
                     if (elements.size() >= number){
                         int iter = number;
