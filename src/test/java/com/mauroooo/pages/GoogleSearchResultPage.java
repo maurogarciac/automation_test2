@@ -24,14 +24,8 @@ public class GoogleSearchResultPage {
     }
         
     public List<String> findLinks(int amount){
-        
         List<WebElement> resultAnchors = new WebDriverWait(driver, PAGE_LOAD_TIMEOUT).until(CustomExpectedConditions.visibilityOfAtLeastNElementsLocated(groupSelector, amount));
-        List<String> fiveLinks = resultAnchors.stream().map(e -> e.getAttribute("href")).collect(Collectors.toList());
 
-        return fiveLinks;
-
+        return (resultAnchors.stream().map(e -> e.getAttribute("href")).collect(Collectors.toList()));
     }
-        
-        
-
 }
