@@ -18,13 +18,12 @@ public class GoogleSteps {
     protected WebDriver driver;
     protected String valueName;
     protected int linkAmount;
-
-    GoogleHomePage homePage = new GoogleHomePage(driver);
-    GoogleSearchResultPage resultPage = new GoogleSearchResultPage(driver);
+    protected GoogleHomePage homePage;
+    protected GoogleSearchResultPage resultPage;
     
     @Before()
     public void beforeScenario(){
-        WebDriverManager manager = WebDriverManager.firefoxdriver();
+        WebDriverManager manager = WebDriverManager.getInstance(System.getProperty("browser"));
         manager.setup();
         driver = manager.create();
     }
@@ -33,30 +32,32 @@ public class GoogleSteps {
         driver.quit();
     }
     
-    @Given("^Google search is loaded$")
+    @Given("Google search is loaded")
     public void googleInstance(){
-        homePage.navigate(driver);
-        
+        homePage = new GoogleHomePage(driver);
+        homePage.navigate();
+
     }
 
-    @When("^I search for '{value}'$")
+    @When("I search for {string}")
     public void searchFor(String value){
+        resultPage = new GoogleSearchResultPage(driver);
         this.valueName = value;
         homePage.search(this.valueName);
 
 
     }
     
-    @Then("^There are at least {amount:d} links that result from it are saved$")
+    @Then("There are at least {int} links that result from it are saved")
     public void saveLinks(int amount){
         this.linkAmount = amount;
         List<String> links = resultPage.findLinks(amount);
 
-        int iter = amount + 1;
+        int iter = 1;
         System.out.println("Results for " + this.valueName + ":");
         for (String link : links){
-            System.out.println( "Link #" +(amount % iter) + ": " + link);
-            iter--;
+            System.out.println( "Link #" +(iter) + ": " + link);
+            iter++;
         }
     }
 
