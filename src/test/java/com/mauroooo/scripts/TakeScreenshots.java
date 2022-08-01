@@ -1,6 +1,13 @@
 package com.mauroooo.scripts;
 
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
+
+import io.cucumber.java.Scenario;
+import org.openqa.selenium.WebElement;
+
 
 import java.io.File;
 import java.util.Calendar;
@@ -8,33 +15,34 @@ import java.util.Date;
 
 public class TakeScreenshots {
     Date date = new Date();
-    static final String SCREENSHOTS_DIR = "/C/Users/guy/Desktop/screenshots";
+    protected File screenshotDirectory = new File("/C/Users/guy/Desktop/screenshots");
     protected WebDriver driver;
+    protected Scenario scenario;
 
     public TakeScreenshots(WebDriver driver){
         this.driver = driver;
     }
-    /*
-    public String makeDirectory(){
+
+    public File makeDirectory(){
         //variable that declares the name of the new dir
-        String NewDirName = Calendar.DAY_OF_YEAR + "-" + Calendar.HOUR_OF_DAY + "hs-" + Calendar.MINUTE + "mins-" + this.feature.name;
-        new File(SCREENSHOTS_DIR).mkdirs();
-        String newPath = os.path.join(SCREENSHOTS_DIR, NewDirName); //
+        String NewDirName = Calendar.DAY_OF_YEAR + "-" + Calendar.HOUR_OF_DAY + "hs-" + Calendar.MINUTE + "mins-" + scenario.getId();
+        if (!screenshotDirectory.mkdirs()){
+            System.out.println("Screenshots will be saved in the existing Screenshots directory at:" + screenshotDirectory.getPath());
+        } else{
+            System.out.println("Created new Screenshots directory at:" + screenshotDirectory.getPath());
+        }
+        File newPath = new File(screenshotDirectory, NewDirName); //
         //check if directory exists, and create it if it doesn't
-        String candidate = newPath;
-        boolean created = false;
+        File candidate = newPath;
         int i = 0;
-        while(!created){
-            try {
-                new File(candidate).mkdirs();
-                created = true;
-            }
-            catch(Exception alreadyCreated){
+        while(true){
+            if(candidate.mkdirs()) {
+                return candidate;
+            }else if(candidate.exists()){
                 i++;
-                candidate = newPath + "_" + i;
+                candidate = new File(newPath + "_" + i);
             }
         }
-        return candidate;
     }
 
 
@@ -42,14 +50,16 @@ public class TakeScreenshots {
     public void savePicture(String beforeAfter) {
         //now take the screenshot and save it in the new directory
         String stepName = "";
-        if ("driver" in this && this.driver is not None){
-            stepName = this.step.line;
+        if (this.driver != null){
+            stepName = scenario.getName(); //da elnombre del scenario no del step
         }
-        if (this.step.table is not None){
+        if (this.step.table != null){
             stepName = stepName + "_" + this.step.table.iteration;
-            String screenshotFileNamePrefix = os.path.join(SCREENSHOTS_DIR, this.scenario.name + "-" + this.step.line + "-" + beforeAfter);
-            this.driver.find_element_by_tag_name("body").screenshot(screenshotFileNamePrefix + "-full.png");
-            this.driver.save_screenshot(screenshotFileNamePrefix + ".png");
+            File screenshotFileNamePrefix = new File(screenshotDirectory + this.scenario.name + "-" + this.step.line + "-" + beforeAfter + "-full.png");
+            WebElement element = driver.findElement(By.cssSelector("body"));
+            File screenshotFile = element.getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(screenshotFile, screenshotFileNamePrefix);
+            //this.driver.save_screenshot(screenshotFileNamePrefix + ".png");
         }
-    }*/
+    }
 }
