@@ -1,5 +1,8 @@
 package com.mauroooo.steps;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.List;
 
 import org.openqa.selenium.WebDriver;
@@ -53,12 +56,18 @@ public class GoogleSteps {
         this.linkAmount = amount;
         List<String> links = resultPage.findLinks(amount);
 
+        File textFile = new File("/C/Users/guy/Desktop/results.txt");
+        textFile.createNewFile();
+        FileWriter fw = new FileWriter(textFile.getAbsoluteFile());
+        BufferedWriter bw = new BufferedWriter(fw);
+
         int iter = 1;
-        System.out.println("Results for " + this.valueName + ":");
+        bw.write("Results for " + this.valueName + ":");
         for (String link : links){
-            System.out.println( "Link #" +(iter) + ": " + link);
+            bw.write( "Link #" +(iter) + ": " + link);
             iter++;
         }
+        bw.close();
     }
 
 
