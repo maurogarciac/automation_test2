@@ -3,13 +3,11 @@ package com.mauroooo.steps;
 import com.mauroooo.pages.GoogleHomePage;
 import com.mauroooo.pages.GoogleSearchResultPage;
 import com.mauroooo.scripts.SaveScreenshots;
-import io.cucumber.core.gherkin.Pickle;
-import io.cucumber.core.gherkin.Step;
+import com.mauroooo.scripts.SpreadsheetOutput;
 import io.cucumber.java.After;
 import io.cucumber.java.AfterStep;
 import io.cucumber.java.Before;
-import io.cucumber.java.BeforeStep;
-import io.cucumber.java.Scenario;
+import io.cucumber.java.BeforeAll;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -35,7 +33,8 @@ public class GoogleSteps {
     protected int linkAmount;
     protected GoogleHomePage homePage;
     protected GoogleSearchResultPage resultPage;
-    protected SaveScreenshots screenshots;
+    protected SpreadsheetOutput spreadsheet;
+    protected ThreadLocal<SaveScreenshots> screenshots;
 
 
     @Before()
@@ -44,10 +43,8 @@ public class GoogleSteps {
         manager.setup();
         driver = manager.create();
 
-        screenshots = new SaveScreenshots(driver); // hacer un singleton de esto proximamente
-        //volatile
-        //sin utilizar ninguna porqueria de inyeccion de dependencias y fijarse el "Double checked locking"
 
+        screenshots.set(new SaveScreenshots(driver)); // hacer un singleton de esto proximamente
     }
 
     @After
@@ -55,13 +52,10 @@ public class GoogleSteps {
         driver.quit();
     }
 
-    @BeforeStep()
-    public void beforeStep() {
-        //screenshots.savePicture("before");
-    }
 
-    @AfterStep()
-    public void afterStep(Scenario scenario) {
+    @AfterStep
+    public void afterStep() {
+        screenshots.get().savePicture();
         //Se pueden conseguir estos atributos usando reflections?
         //crear un plugin que es un Listener y pasarselo a las cucumber options
        // screenshots.savePicture("after", scenario, step);
@@ -83,7 +77,7 @@ public class GoogleSteps {
     }
 
     @Then("There are at least {int} links that result from it are saved")
-    public void saveLinks(int amount) {
+    public void saveLinks(int amount) throws IOException {
         this.linkAmount = amount;
         List<String> links = resultPage.findLinks(amount);
 
@@ -102,5 +96,6 @@ public class GoogleSteps {
             logger.error("An error occurred");
             e.printStackTrace();
         }
+        SpreadsheetOutput.writeExcelFile(valueName, links, this.valueName);
     }
 }

@@ -1,8 +1,6 @@
 package com.mauroooo.scripts;
 
 
-import io.cucumber.core.gherkin.Step;
-import io.cucumber.java.Scenario;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
@@ -21,15 +19,14 @@ public class SaveScreenshots {
 
     protected File screenshotDirectory = new File("/screenshots");
     protected WebDriver driver;
-    // sanitizar el scenario
 
     public SaveScreenshots(WebDriver driver) {
         this.driver = driver;
     }
 
-    private File makeDirectory(Scenario scenario) {
+    private File makeDirectory(String scenarioName) {
         //variable that declares the name of the new dir
-        String NewDirName = Calendar.DAY_OF_YEAR + "-" + Calendar.HOUR_OF_DAY + "hs-" + Calendar.MINUTE + "mins-" + scenario.getName();
+        String NewDirName = Calendar.DAY_OF_YEAR + "-" + Calendar.HOUR_OF_DAY + "hs-" + Calendar.MINUTE + "mins-" + scenarioName;
         if (screenshotDirectory.mkdirs()) {
             logger.info("Created new Screenshots directory at:" + screenshotDirectory.getPath());
         } else {
@@ -50,18 +47,13 @@ public class SaveScreenshots {
     }
 
 
-    public void savePicture(String beforeAfter, Scenario scenario, Step step) {
+    public void savePicture(String beforeAfter, String stepName, String scenarioName, String stepId) {
         //now take the screenshot and save it in the new directory
-
-        String stepName = "";
-        if (this.driver != null) {
-            stepName = step.getText();
-        }
         try {
-            if (step.getId() != null) { // get table actually
-                stepName = stepName + "_" + step.getId();
+            if(stepId != null){
+                 stepName = stepName + "_" + stepId;
             }
-            File screenshotFileNamePrefix = new File(makeDirectory(scenario), stepName + "-" + beforeAfter + "-full.png");
+            File screenshotFileNamePrefix = new File(makeDirectory(scenarioName), stepName + "-" + beforeAfter + "-full.png");
             WebElement element = driver.findElement(By.cssSelector("body"));
             File screenshotFile = element.getScreenshotAs(OutputType.FILE);
             FileUtils.copyFile(screenshotFile, screenshotFileNamePrefix);
