@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -21,40 +20,39 @@ import static java.nio.file.StandardOpenOption.READ;
 
 
 public class SpreadsheetOutput {
-    //protected static final Map<Path, SpreadsheetOutput> openFiles = new HashMap<>();
-    protected static OutputStream fileOutput;
+    protected static Path excelFile;
+    protected static Row row;
+    protected static Workbook workbook;
+    protected static Sheet spreadsheet;
     protected static InputStream fileInput;
-    //protected static volatile SpreadsheetOutput instance;
+    protected static OutputStream fileOutput;
+
     protected static volatile SpreadsheetOutput open;
-    protected List<String> links;
-    protected static String spreadSheetFileName;
-
-    public SpreadsheetOutput(List<String> list) {
-
-    }
-
-
-
     protected static ConcurrentMap<Path, SpreadsheetOutput> instances = new ConcurrentHashMap<>();
 
 
-    public static SpreadsheetOutput open(String valueName, SpreadsheetOutput spreadsheetOutput) throws IOException {
-        Path excelFile = Paths.get(spreadSheetFileName + ".xlsx").toAbsolutePath();
-        instances.put(excelFile, spreadsheetOutput);
-        fileInput = newInputStream(excelFile, READ);
+    private SpreadsheetOutput(Path excelPath) {
+        excelFile = excelPath;
+    }
+
+    public static SpreadsheetOutput open(Path excelFile) throws IOException {
 
         if(instances.get(excelFile) == null){
             synchronized (SpreadsheetOutput.class) {
-                open = new SpreadsheetOutput();
+                if(instances.get(excelFile) == null){
+                    open = new SpreadsheetOutput(excelFile);
+                }
             }
         }
+        instances.put(excelFile, open);
         return open;
+
+        //return instances.computeIfAbsent(open.excelFile, SpreadsheetOutput::new);
+
     }
 
     public static void writeExcelFile(String valueName, List<String> links) throws IOException {
-        Workbook workbook;
-        Sheet spreadsheet;
-        Row row;
+        fileInput = newInputStream(excelFile, READ);
         try {
             workbook = new XSSFWorkbook(fileInput);
         } catch (EmptyFileException exception) {
@@ -79,8 +77,10 @@ public class SpreadsheetOutput {
             spreadsheet.autoSizeColumn(iter);
             iter++;
         }
-        fileOutput = newOutputStream(multitonInst.get());
-        workbook.write(fileOutput);
+    }
 
+    public static void closeExcelFile() throws IOException {
+        fileOutput = newOutputStream(excelFile);
+        workbook.write(fileOutput);
     }
 }

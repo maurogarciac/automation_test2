@@ -7,7 +7,7 @@ import com.mauroooo.scripts.SpreadsheetOutput;
 import io.cucumber.java.After;
 import io.cucumber.java.AfterStep;
 import io.cucumber.java.Before;
-import io.cucumber.java.BeforeAll;
+import io.cucumber.java.Scenario;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -15,44 +15,55 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.AfterTest;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class GoogleSteps {
     private static final Logger logger = LoggerFactory.getLogger(GoogleSteps.class);
 
-
+    protected Scenario scenario;
     protected WebDriver driver;
     protected String valueName;
     protected int linkAmount;
     protected GoogleHomePage homePage;
     protected GoogleSearchResultPage resultPage;
-    protected SpreadsheetOutput spreadsheet;
     protected ThreadLocal<SaveScreenshots> screenshots;
 
 
     @Before()
-    public void beforeScenario() {
+    public void beforeScenario(Scenario scenario) throws IOException {
         WebDriverManager manager = WebDriverManager.getInstance(System.getProperty("browser"));
         manager.setup();
         driver = manager.create();
 
+        this.scenario = scenario;
+        String scenarioName = scenario.getName().replaceAll(" ", "_");
+        Path excelFile = Paths.get(scenarioName + ".xlsx").toAbsolutePath();
+        SpreadsheetOutput.open(excelFile);
 
         //screenshots.set(new SaveScreenshots(driver)); // hacer un singleton de esto proximamente
     }
 
     @After
-    public void afterScenario() {
+    public void afterScenario() throws IOException {
+        SpreadsheetOutput.closeExcelFile();
         driver.quit();
     }
 
+    @AfterTest
+    public void afterTest() throws IOException {
 
+    }
     @AfterStep
     public void afterStep() {
         //screenshots.get().savePicture("after", "step", "scenario", "StepID");
@@ -76,6 +87,9 @@ public class GoogleSteps {
 
     @When("I feel lucky about the term {string}")
     public void luckySearchFor(String value){
+        resultPage = new GoogleSearchResultPage(driver);
+        this.valueName = value;
+        homePage.search(this.valueName, true);
 
     }
 
@@ -103,7 +117,13 @@ public class GoogleSteps {
     }
 
     @Then("There is a resulting link for the term")
-    public void saveLuckyLink(){
+    public void saveLuckyLink() throws IOException {
+        String link = resultPage.returnLink(valueName);
+        List<String> linkList = new ArrayList<>();
+        linkList.add(link);
 
+        SpreadsheetOutput.writeExcelFile(valueName, linkList);
+
+        
     }
 }

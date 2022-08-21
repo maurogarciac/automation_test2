@@ -18,8 +18,8 @@ Feature: Fetching links from a Google search
         When I feel lucky about the term "<value>"
         Then There is a resulting link for the term
         Examples:
-            | value   |
-            | Perro   |
-            | Gato    |
-            | Manzana |
-            | Naranja |
+            | value        |
+            | Snickers.com |
+            | Mars.com     |
+            | Twix.com     |
+            | KitKat.com   |
