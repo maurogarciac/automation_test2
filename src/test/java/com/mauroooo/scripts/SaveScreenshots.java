@@ -17,7 +17,7 @@ import java.util.Calendar;
 public class SaveScreenshots {
     private static final Logger logger = LoggerFactory.getLogger(SaveScreenshots.class);
 
-    protected File screenshotDirectory = new File("/screenshots");
+    protected File screenshotDirectory = new File("screenshots");
     protected WebDriver driver;
 
     public SaveScreenshots(WebDriver driver) {
@@ -28,9 +28,13 @@ public class SaveScreenshots {
         //variable that declares the name of the new dir
         String NewDirName = Calendar.DAY_OF_YEAR + "-" + Calendar.HOUR_OF_DAY + "hs-" + Calendar.MINUTE + "mins-" + scenarioName;
         if (screenshotDirectory.mkdirs()) {
-            logger.info("Created new Screenshots directory at:" + screenshotDirectory.getPath());
+            String text = "Created new Screenshots directory at:" + screenshotDirectory.getAbsolutePath();
+            logger.info(text);
+            System.out.println(text);
         } else {
-            logger.info("Screenshots will be saved in the existing Screenshots directory at:" + screenshotDirectory.getPath());
+            String text = "Screenshots will be saved in the existing Screenshots directory at:" + screenshotDirectory.getAbsolutePath();
+            logger.info(text);
+            System.out.println(text);
         }
         File newPath = new File(screenshotDirectory, NewDirName); //
         //check if directory exists, and create it if it doesn't

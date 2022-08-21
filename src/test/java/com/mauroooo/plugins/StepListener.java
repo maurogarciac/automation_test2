@@ -9,8 +9,8 @@ import io.cucumber.plugin.event.TestStepFinished;
 import io.cucumber.plugin.event.TestStepStarted;
 
 
-//correr todo con threadLocal y le decis getCurrentStep(currentStep)
-//vos vas a tener un mapa al que le decis get y ese thread te devuelve un mapa de acuerdo a ese thread.
+//correr todo con ThreadLocal<StepListener> y le decis get().CurrentStep(currentStep)
+//vos vas a tener un mapa al que le decis get() y ese thread te devuelve un mapa de acuerdo a ese thread.
 //como un multiton pero de threads
 //el esquema de singleton en TestNG es estatico?
 //se podria sacar la screenshot desde este listenener

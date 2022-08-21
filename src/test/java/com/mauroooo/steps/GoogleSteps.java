@@ -44,7 +44,7 @@ public class GoogleSteps {
         driver = manager.create();
 
 
-        screenshots.set(new SaveScreenshots(driver)); // hacer un singleton de esto proximamente
+        //screenshots.set(new SaveScreenshots(driver)); // hacer un singleton de esto proximamente
     }
 
     @After
@@ -55,17 +55,16 @@ public class GoogleSteps {
 
     @AfterStep
     public void afterStep() {
-        screenshots.get().savePicture();
+        //screenshots.get().savePicture("after", "step", "scenario", "StepID");
         //Se pueden conseguir estos atributos usando reflections?
         //crear un plugin que es un Listener y pasarselo a las cucumber options
-       // screenshots.savePicture("after", scenario, step);
+        // screenshots.savePicture("after", scenario, step);
     }
 
     @Given("Google search is loaded")
     public void googleInstance() {
         homePage = new GoogleHomePage(driver);
         homePage.navigate();
-
     }
 
     @When("I search for {string}")
@@ -73,6 +72,10 @@ public class GoogleSteps {
         resultPage = new GoogleSearchResultPage(driver);
         this.valueName = value;
         homePage.search(this.valueName);
+    }
+
+    @When("I feel lucky about the term {string}")
+    public void luckySearchFor(String value){
 
     }
 
@@ -96,6 +99,11 @@ public class GoogleSteps {
             logger.error("An error occurred");
             e.printStackTrace();
         }
-        SpreadsheetOutput.writeExcelFile(valueName, links, this.valueName);
+        SpreadsheetOutput.writeExcelFile(valueName, links);
+    }
+
+    @Then("There is a resulting link for the term")
+    public void saveLuckyLink(){
+
     }
 }

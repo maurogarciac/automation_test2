@@ -11,9 +11,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import static java.nio.file.Files.newInputStream;
 import static java.nio.file.Files.newOutputStream;
@@ -21,44 +21,37 @@ import static java.nio.file.StandardOpenOption.READ;
 
 
 public class SpreadsheetOutput {
-    protected static final Map<Path, SpreadsheetOutput> openFiles = new HashMap<>();
-    protected OutputStream fileOutput;
-    protected static volatile SpreadsheetOutput instance;
-    //classloader
-    public enum MultiTest { ONE,TWO,THREE }
-    public static SpreadsheetOutput getInstance(){
+    //protected static final Map<Path, SpreadsheetOutput> openFiles = new HashMap<>();
+    protected static OutputStream fileOutput;
+    protected static InputStream fileInput;
+    //protected static volatile SpreadsheetOutput instance;
+    protected static volatile SpreadsheetOutput open;
+    protected List<String> links;
+    protected static String spreadSheetFileName;
 
-        if (instance == null){
-            synchronized (SpreadsheetOutput.class){
-                if (instance == null) {
-                    instance = new SpreadsheetOutput();
-                }
+    public SpreadsheetOutput(List<String> list) {
+
+    }
+
+
+
+    protected static ConcurrentMap<Path, SpreadsheetOutput> instances = new ConcurrentHashMap<>();
+
+
+    public static SpreadsheetOutput open(String valueName, SpreadsheetOutput spreadsheetOutput) throws IOException {
+        Path excelFile = Paths.get(spreadSheetFileName + ".xlsx").toAbsolutePath();
+        instances.put(excelFile, spreadsheetOutput);
+        fileInput = newInputStream(excelFile, READ);
+
+        if(instances.get(excelFile) == null){
+            synchronized (SpreadsheetOutput.class) {
+                open = new SpreadsheetOutput();
             }
         }
-        return instance;
-    }
-    //convertir esto en un multiton que dada la instancia devuelva un valor diferente en el map
-    // en vez de un getINstance va a ser el open
-    // va a ser absoluto y completamente dinamico
-    // como Mapa usar algo de java.util.concurrent >> puede ser un concurrentHashmap por ejemplo
-    public static SpreadsheetOutput open(String fileName) {
-
-        Path excelFile = Paths.get(fileName).toAbsolutePath();
-
-        return null;
+        return open;
     }
 
-    // thread safe > synchronized
-    // una especie de singleton que se llama multiton
-    //singleton tiene una sola instancia pero el multiton tiene multiples instancias con nombres diferentes >> enum es un multiton
-    // pero como mis nombres son dinamicos >> write.file(fileName)
-    // tiene que fijarse si el archivo esta abierto y seguir escribiendo
-    //por ahi convine mantener el outputStream hasta el final
-    // Como hacer varios incrementos dentro de la misma ejecucion
-    // Map<Path, SpreadsheetOutput> que el open del archivo sea protected y llamarlo dentro del writeFile y que use ese archivo
-    public static void writeExcelFile(String valueName, List<String> links, String sheetName) throws IOException {
-        Path excelFile = Paths.get("ExcelOutput.xlsx");
-        InputStream fileInput = newInputStream(excelFile, READ);
+    public static void writeExcelFile(String valueName, List<String> links) throws IOException {
         Workbook workbook;
         Sheet spreadsheet;
         Row row;
@@ -68,10 +61,10 @@ public class SpreadsheetOutput {
             System.out.println(exception);
             workbook = new XSSFWorkbook();
         }
-        if (workbook.getSheetIndex(sheetName) >= 0) {
-            spreadsheet = workbook.getSheet(sheetName);
+        if (workbook.getSheetIndex(valueName) >= 0) {
+            spreadsheet = workbook.getSheet(valueName);
         } else {
-            spreadsheet = workbook.createSheet(sheetName);
+            spreadsheet = workbook.createSheet(valueName);
         }
         if (spreadsheet.getRow(0) == null) {
             row = spreadsheet.createRow(0);
@@ -86,7 +79,7 @@ public class SpreadsheetOutput {
             spreadsheet.autoSizeColumn(iter);
             iter++;
         }
-        OutputStream fileOutput = newOutputStream(excelFile);
+        fileOutput = newOutputStream(multitonInst.get());
         workbook.write(fileOutput);
 
     }

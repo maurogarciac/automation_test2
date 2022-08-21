@@ -9,6 +9,17 @@ Feature: Fetching links from a Google search
         Examples:
             | value   | amount |
             | Banana  | 5      |
-            | Pera    | 7      |
+            | Pera    | 6      |
             | Manzana | 2      |
             | Naranja | 1      |
+
+    Scenario Outline: First lucky link
+        Given Google search is loaded
+        When I feel lucky about the term "<value>"
+        Then There is a resulting link for the term
+        Examples:
+            | value   |
+            | Perro   |
+            | Gato    |
+            | Manzana |
+            | Naranja |

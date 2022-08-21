@@ -2,7 +2,7 @@
 ## Requirements
 * Java installed
 
-## Quick execution manual
+## Quick execution manual (TBD - WIP)
 
 1. Clone this Repository and change directory into it:
     ```shell
