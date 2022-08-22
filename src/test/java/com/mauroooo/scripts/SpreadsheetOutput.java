@@ -20,23 +20,20 @@ import static java.nio.file.StandardOpenOption.READ;
 
 
 public class SpreadsheetOutput {
-    protected static Path excelFile;
-    protected static Row row;
-    protected static Workbook workbook;
-    protected static Sheet spreadsheet;
-    protected static InputStream fileInput;
-    protected static OutputStream fileOutput;
+    protected Path excelFile;
+    protected Workbook workbook;
 
-    protected static volatile SpreadsheetOutput open;
     protected static ConcurrentMap<Path, SpreadsheetOutput> instances = new ConcurrentHashMap<>();
 
 
     private SpreadsheetOutput(Path excelPath) {
         excelFile = excelPath;
+        open();
     }
 
-    public static SpreadsheetOutput open(Path excelFile) throws IOException {
-
+    public static SpreadsheetOutput getInstance(Path excelFile) {
+        /*
+        SpreadsheetOutput open;
         if(instances.get(excelFile) == null){
             synchronized (SpreadsheetOutput.class) {
                 if(instances.get(excelFile) == null){
@@ -46,29 +43,28 @@ public class SpreadsheetOutput {
         }
         instances.put(excelFile, open);
         return open;
-
-        //return instances.computeIfAbsent(open.excelFile, SpreadsheetOutput::new);
-
+        */
+        return instances.computeIfAbsent(excelFile, SpreadsheetOutput::new);
     }
 
-    public static void writeExcelFile(String valueName, List<String> links) throws IOException {
-        fileInput = newInputStream(excelFile, READ);
+    protected void open() {
         try {
+            InputStream fileInput = newInputStream(excelFile, READ);
             workbook = new XSSFWorkbook(fileInput);
-        } catch (EmptyFileException exception) {
-            System.out.println(exception);
+            fileInput.close();
+        } catch (EmptyFileException | IOException exception) {
             workbook = new XSSFWorkbook();
         }
-        if (workbook.getSheetIndex(valueName) >= 0) {
-            spreadsheet = workbook.getSheet(valueName);
-        } else {
+    }
+
+    public synchronized void addSheet(String valueName, List<String> links) {
+        Row row;
+        Sheet spreadsheet;
+
+        if ((spreadsheet = workbook.getSheet(valueName)) == null) {
             spreadsheet = workbook.createSheet(valueName);
         }
-        if (spreadsheet.getRow(0) == null) {
-            row = spreadsheet.createRow(0);
-        } else {
-            row = spreadsheet.createRow(spreadsheet.getLastRowNum() + 1);
-        }
+        row = spreadsheet.createRow(spreadsheet.getLastRowNum() + 1);
         int iter = 1;
         row.createCell(0).setCellValue("\nResults for " + valueName + ":\n");
         spreadsheet.autoSizeColumn(0);
@@ -79,8 +75,9 @@ public class SpreadsheetOutput {
         }
     }
 
-    public static void closeExcelFile() throws IOException {
-        fileOutput = newOutputStream(excelFile);
+    public synchronized void writeFile() throws IOException {
+        OutputStream fileOutput = newOutputStream(excelFile);
         workbook.write(fileOutput);
+        fileOutput.close();
     }
 }
