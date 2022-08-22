@@ -18,11 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterTest;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -30,9 +27,8 @@ import java.util.List;
 
 
 public class GoogleSteps {
-    private static final Logger logger = LoggerFactory.getLogger(GoogleSteps.class);
+    //private static final Logger logger = LoggerFactory.getLogger(GoogleSteps.class);
 
-    protected Scenario scenario;
     protected WebDriver driver;
     protected String valueName;
     protected int linkAmount;
@@ -41,6 +37,7 @@ public class GoogleSteps {
     protected SaveScreenshots screenshots;
     protected File screenshots_directory;
     protected File textFile;
+    //protected ThreadLocal<TxtWriteOutput> writingTxtFile = new ThreadLocal<>();
 
 
     @Before()
@@ -49,13 +46,14 @@ public class GoogleSteps {
         manager.setup();
         driver = manager.create();
 
-        this.scenario = scenario;
         String scenarioName = scenario.getName().replaceAll(" ", "_");
         Path excelFile = Paths.get(scenarioName + ".xlsx").toAbsolutePath();
         SpreadsheetOutput.open(excelFile);
 
         TxtWriteOutput.getInstance();
         this.textFile = TxtWriteOutput.makeTextFile(scenarioName);
+        TxtWriteOutput.writeFileHeader(textFile, scenarioName);
+
         //SaveScreenshots.getInstance(driver);
         //screenshots_directory = SaveScreenshots.makeDirectory(scenarioName);
     }
@@ -96,7 +94,6 @@ public class GoogleSteps {
         resultPage = new GoogleSearchResultPage(driver);
         this.valueName = value;
         homePage.search(this.valueName, true);
-
     }
 
     @Then("There are at least {int} links that result from it are saved")
@@ -105,24 +102,6 @@ public class GoogleSteps {
         List<String> links = resultPage.findLinks(amount);
 
         TxtWriteOutput.writeTextFile(valueName, links, textFile);
-        /*
-        File textFile = new File("foundLinks.txt");
-        try (FileWriter fw = new FileWriter(textFile.getAbsoluteFile(), true); BufferedWriter bw = new BufferedWriter(fw); PrintWriter pr = new PrintWriter(bw);) {
-            if (textFile.createNewFile()) {
-                logger.info("File created under" + textFile.getPath());
-            }
-            int iter = 1;
-            pr.println("\nResults for " + this.valueName + ":\n");
-            for (String link : links) {
-                pr.println("Link #" + (iter) + ": " + link + "\n");
-                iter++;
-            }
-        } catch (IOException e) {
-            logger.error("An error occurred");
-            e.printStackTrace();
-        }
-
-         */
         SpreadsheetOutput.writeExcelFile(valueName, links);
     }
 

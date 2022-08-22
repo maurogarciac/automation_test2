@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Calendar;
 import java.util.List;
 
 public class TxtWriteOutput {
@@ -33,6 +34,15 @@ public class TxtWriteOutput {
             System.out.println("File created under" + textFile.getPath());
         }
         return textFile;
+    }
+
+    public static void writeFileHeader(File txtFile, String scenarioName){
+        try (FileWriter fw = new FileWriter(txtFile.getAbsoluteFile(), true); BufferedWriter bw = new BufferedWriter(fw); PrintWriter pr = new PrintWriter(bw);) {
+            pr.println("\n###" + Calendar.DAY_OF_YEAR + "-" + Calendar.HOUR_OF_DAY + "hs-" + Calendar.MINUTE + "mins-" + scenarioName + "###\n");
+        } catch (IOException e) {
+            System.out.println("An error occurred");
+            e.printStackTrace();
+        }
     }
 
     public static void writeTextFile(String valueName, List<String> links, File txtFile){
