@@ -1,3 +1,10 @@
 /.vscode/
 /.idea/
 /target/
+/screenshots/
+ExcelOutput.xlsx
+First_lucky_link.xlsx
+First_N_links.xlsx
+foundLinks.txt
+First_N_links.txt
+First_lucky_link.txt

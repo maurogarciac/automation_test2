@@ -6,25 +6,45 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Calendar;
 
 
 public class SaveScreenshots {
     private static final Logger logger = LoggerFactory.getLogger(SaveScreenshots.class);
+    public static volatile SaveScreenshots instance;
+    static Duration PAGE_LOAD_TIMEOUT = Duration.ofSeconds(5);
+    protected static File finalDirectory;
 
-    protected File screenshotDirectory = new File("screenshots");
-    protected WebDriver driver;
+    protected static final File screenshotDirectory = new File("screenshots");
+
+    protected static WebDriver driver;
+
 
     public SaveScreenshots(WebDriver driver) {
-        this.driver = driver;
+        SaveScreenshots.driver = driver;
     }
 
-    private File makeDirectory(String scenarioName) {
+    public static SaveScreenshots getInstance(WebDriver driver){
+        if (instance == null){
+            synchronized (SaveScreenshots.class){
+                if (instance == null) {
+                    instance = new SaveScreenshots(driver);
+                }
+           }
+        }
+        return instance;
+    }
+
+
+    public static File makeDirectory(String scenarioName) {
         //variable that declares the name of the new dir
         String NewDirName = Calendar.DAY_OF_YEAR + "-" + Calendar.HOUR_OF_DAY + "hs-" + Calendar.MINUTE + "mins-" + scenarioName;
         if (screenshotDirectory.mkdirs()) {
@@ -36,7 +56,7 @@ public class SaveScreenshots {
             logger.info(text);
             System.out.println(text);
         }
-        File newPath = new File(screenshotDirectory, NewDirName); //
+        File newPath = new File(screenshotDirectory, NewDirName);
         //check if directory exists, and create it if it doesn't
         File candidate = newPath;
         int i = 0;
@@ -51,14 +71,20 @@ public class SaveScreenshots {
     }
 
 
-    public void savePicture(String beforeAfter, String stepName, String scenarioName, String stepId) {
+    public static void savePicture(String beforeAfter, String stepName, File finalDir) {
         //now take the screenshot and save it in the new directory
+        finalDirectory = finalDir;
         try {
-            if(stepId != null){
-                 stepName = stepName + "_" + stepId;
+            int i = 1;
+            File screenshotFileNamePrefix;
+            screenshotFileNamePrefix = new File(String.valueOf(finalDirectory), stepName + "-" + beforeAfter + "-full-" + i + ".png");
+            if (finalDirectory.isDirectory()) {
+                while(screenshotFileNamePrefix.exists()) {
+                    i++;
+                    screenshotFileNamePrefix = new File(stepName + "-" + beforeAfter + "-full-" + i + ".png");
+                }
             }
-            File screenshotFileNamePrefix = new File(makeDirectory(scenarioName), stepName + "-" + beforeAfter + "-full.png");
-            WebElement element = driver.findElement(By.cssSelector("body"));
+            WebElement element = new WebDriverWait(driver, PAGE_LOAD_TIMEOUT).until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("body")));
             File screenshotFile = element.getScreenshotAs(OutputType.FILE);
             FileUtils.copyFile(screenshotFile, screenshotFileNamePrefix);
             //this.driver.save_screenshot(screenshotFileNamePrefix + ".png");

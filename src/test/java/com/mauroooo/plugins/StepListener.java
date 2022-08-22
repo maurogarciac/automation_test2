@@ -41,6 +41,7 @@ public class StepListener implements ConcurrentEventListener {
     //}
     public void handleStep(TestStep event){
         System.out.println("TestStep === " + event.getId());
+
         //seguramente tengo acceso al map de cosas del Test y dado ese mapa puedo pedir el dato con el UUID
         //un listener del Scenario y el le pido el step que tenga ese id
     }

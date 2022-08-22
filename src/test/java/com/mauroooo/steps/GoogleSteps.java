@@ -4,6 +4,7 @@ import com.mauroooo.pages.GoogleHomePage;
 import com.mauroooo.pages.GoogleSearchResultPage;
 import com.mauroooo.scripts.SaveScreenshots;
 import com.mauroooo.scripts.SpreadsheetOutput;
+import com.mauroooo.scripts.TxtWriteOutput;
 import io.cucumber.java.After;
 import io.cucumber.java.AfterStep;
 import io.cucumber.java.Before;
@@ -37,7 +38,9 @@ public class GoogleSteps {
     protected int linkAmount;
     protected GoogleHomePage homePage;
     protected GoogleSearchResultPage resultPage;
-    protected ThreadLocal<SaveScreenshots> screenshots;
+    protected SaveScreenshots screenshots;
+    protected File screenshots_directory;
+    protected File textFile;
 
 
     @Before()
@@ -51,7 +54,10 @@ public class GoogleSteps {
         Path excelFile = Paths.get(scenarioName + ".xlsx").toAbsolutePath();
         SpreadsheetOutput.open(excelFile);
 
-        //screenshots.set(new SaveScreenshots(driver)); // hacer un singleton de esto proximamente
+        TxtWriteOutput.getInstance();
+        this.textFile = TxtWriteOutput.makeTextFile(scenarioName);
+        //SaveScreenshots.getInstance(driver);
+        //screenshots_directory = SaveScreenshots.makeDirectory(scenarioName);
     }
 
     @After
@@ -66,10 +72,10 @@ public class GoogleSteps {
     }
     @AfterStep
     public void afterStep() {
-        //screenshots.get().savePicture("after", "step", "scenario", "StepID");
+        //SaveScreenshots.savePicture("after", valueName , screenshots_directory);
+
         //Se pueden conseguir estos atributos usando reflections?
         //crear un plugin que es un Listener y pasarselo a las cucumber options
-        // screenshots.savePicture("after", scenario, step);
     }
 
     @Given("Google search is loaded")
@@ -98,6 +104,8 @@ public class GoogleSteps {
         this.linkAmount = amount;
         List<String> links = resultPage.findLinks(amount);
 
+        TxtWriteOutput.writeTextFile(valueName, links, textFile);
+        /*
         File textFile = new File("foundLinks.txt");
         try (FileWriter fw = new FileWriter(textFile.getAbsoluteFile(), true); BufferedWriter bw = new BufferedWriter(fw); PrintWriter pr = new PrintWriter(bw);) {
             if (textFile.createNewFile()) {
@@ -113,6 +121,8 @@ public class GoogleSteps {
             logger.error("An error occurred");
             e.printStackTrace();
         }
+
+         */
         SpreadsheetOutput.writeExcelFile(valueName, links);
     }
 
@@ -122,8 +132,7 @@ public class GoogleSteps {
         List<String> linkList = new ArrayList<>();
         linkList.add(link);
 
+        TxtWriteOutput.writeTextFile(valueName, linkList, textFile);
         SpreadsheetOutput.writeExcelFile(valueName, linkList);
-
-        
     }
 }
