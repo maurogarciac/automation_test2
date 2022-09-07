@@ -13,6 +13,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.File;
@@ -46,14 +47,16 @@ public class GoogleSteps {
     public void beforeScenario(Scenario scenario) throws MalformedURLException {
         String browserProperty = System.getProperty("browser");
         String remoteProperty = System.getProperty("remote");
-        WebDriverManager manager = WebDriverManager.getInstance(browserProperty);
+
         if(remoteProperty == null){
+            WebDriverManager manager = WebDriverManager.getInstance(browserProperty);
             manager.setup();
+            driver = manager.create();
         } else {
             String url = System.getProperty("hub_url");
-            manager = manager.remoteAddress(new URL(url));
+            driver = new RemoteWebDriver(new URL(url), new DesiredCapabilities());
         }
-        driver = manager.create();
+
 
         String scenarioName = scenario.getName().replaceAll("[ .\"']", "_").replaceAll("_for__.*", "");
         Path excelFile = Paths.get(scenarioName + ".xlsx").toAbsolutePath();
