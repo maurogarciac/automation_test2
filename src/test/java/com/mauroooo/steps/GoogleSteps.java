@@ -13,9 +13,12 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -23,8 +26,10 @@ import java.util.List;
 
 
 public class GoogleSteps {
+    //reificacion
+    //parent class o multiton para pasar los parametros a estos objetos que llamo muchas veces como el Excel y el Txt quiza el Screenshots
     //private static final Logger logger = LoggerFactory.getLogger(GoogleSteps.class);
-
+    //puede ser un multiton
     protected WebDriver driver;
     protected String valueName;
     protected int linkAmount;
@@ -38,9 +43,15 @@ public class GoogleSteps {
 
 
     @Before()
-    public void beforeScenario(Scenario scenario){
-        WebDriverManager manager = WebDriverManager.getInstance(System.getProperty("browser"));
+    public void beforeScenario(Scenario scenario) throws MalformedURLException {
+        String browserProperty = System.getProperty("browser");
+        String remoteProperty = System.getProperty("remote");
+        WebDriverManager manager = WebDriverManager.getInstance(browserProperty);
         manager.setup();
+        if(remoteProperty != null){
+            String url = System.getProperty("hub_url");
+            manager = manager.remoteAddress(new URL(url));
+        }
         driver = manager.create();
 
         String scenarioName = scenario.getName().replaceAll("[ .\"']", "_").replaceAll("_for__.*", "");
@@ -105,19 +116,5 @@ public class GoogleSteps {
 
         //TxtWriteOutput.writeTextFile(valueName, linkList, textFile);
         spreadsheetOutput.get().addSheet(valueName, linkList);
-    }
-
-    public boolean isPalindrome(String string){
-        StringBuilder sb = new StringBuilder(string);
-        String reversed = sb.reverse().toString();
-        return string.equals(reversed);
-    }
-    public boolean isPalindromeAgain(String string){
-        for (int iter = 0; iter < string.length()/2; iter++){
-            if (string.charAt(iter) != string.charAt(string.length()-1-iter)){
-                return false;
-            }
-        }
-        return true;
     }
 }

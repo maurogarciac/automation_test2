@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    stages{
+        stage("Clean up"){
+            steps{
+                deleteDir()
+            }
+        }
+        stage("Clone Repo"){
+            steps{
+                sh "git clone https://github.com/maurogarciac/automation_test2.git"
+            }
+        }
+        stage("Build"){
+            steps{
+                dir("automation_test2"){
+                sh "mvn clean install"
+                }
+            }
+        }
+        stage("Test"){
+                    steps{
+                        dir("automation_test2"){
+                        sh "mvn test"
+                        }
+                    }
+        }
+    }
+}

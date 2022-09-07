@@ -15,7 +15,7 @@ public class GoogleTest {
     protected GoogleHomePage homePage;
     protected GoogleSearchResultPage resultPage;
 
-    @Test
+    //@Test
     public void testFindNLinks (){
         WebDriverManager manager = WebDriverManager.getInstance("chrome");
         manager.setup();

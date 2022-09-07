@@ -1,5 +1,4 @@
 package com.mauroooo;
-//para vscode necesito que el classpath este integrado
 
 import org.testng.annotations.DataProvider;
 import io.cucumber.testng.AbstractTestNGCucumberTests;
