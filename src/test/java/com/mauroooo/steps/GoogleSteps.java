@@ -47,11 +47,11 @@ public class GoogleSteps {
         String browserProperty = System.getProperty("browser");
         String remoteProperty = System.getProperty("remote");
         WebDriverManager manager = WebDriverManager.getInstance(browserProperty);
-        manager.setup();
         if(remoteProperty != null){
             String url = System.getProperty("hub_url");
             manager = manager.remoteAddress(new URL(url));
         }
+        manager.setup();
         driver = manager.create();
 
         String scenarioName = scenario.getName().replaceAll("[ .\"']", "_").replaceAll("_for__.*", "");
