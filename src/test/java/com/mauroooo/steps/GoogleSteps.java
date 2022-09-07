@@ -49,10 +49,12 @@ public class GoogleSteps {
         String remoteProperty = System.getProperty("remote");
 
         if(remoteProperty == null){
+            System.out.println("Boni Garcia");
             WebDriverManager manager = WebDriverManager.getInstance(browserProperty);
             manager.setup();
             driver = manager.create();
         } else {
+            System.out.println("Remote");
             String url = System.getProperty("hub_url");
             driver = new RemoteWebDriver(new URL(url), new DesiredCapabilities());
         }
