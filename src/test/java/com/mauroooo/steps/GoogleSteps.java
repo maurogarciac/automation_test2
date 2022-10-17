@@ -12,6 +12,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -31,7 +32,7 @@ public class GoogleSteps {
     //parent class o multiton para pasar los parametros a estos objetos que llamo muchas veces como el Excel y el Txt quiza el Screenshots
     //private static final Logger logger = LoggerFactory.getLogger(GoogleSteps.class);
     //puede ser un multiton
-    protected WebDriver driver;
+    protected ThreadLocal<WebDriver> driver = new ThreadLocal<>();
     protected String valueName;
     protected int linkAmount;
     protected GoogleHomePage homePage;
@@ -46,17 +47,19 @@ public class GoogleSteps {
     @Before()
     public void beforeScenario(Scenario scenario) throws MalformedURLException {
         String browserProperty = System.getProperty("browser");
-        String remoteProperty = System.getProperty("remote");
+        Boolean remoteProperty = Boolean.valueOf(System.getProperty("remote"));
 
-        if(remoteProperty == null){
+        if(remoteProperty){
+            System.out.println("Remote");
+            String url = System.getProperty("hub_url");
+            DesiredCapabilities capabilities = new DesiredCapabilities(browserProperty, null, Platform.WIN10);
+            //capabilities.setBrowserName(browserProperty);
+            driver.set(new RemoteWebDriver(new URL(url), capabilities));
+        } else {
             System.out.println("Boni Garcia");
             WebDriverManager manager = WebDriverManager.getInstance(browserProperty);
             manager.setup();
-            driver = manager.create();
-        } else {
-            System.out.println("Remote");
-            String url = System.getProperty("hub_url");
-            driver = new RemoteWebDriver(new URL(url), new DesiredCapabilities());
+            driver.set(manager.create());
         }
 
 
@@ -69,7 +72,7 @@ public class GoogleSteps {
         //this.textFile = TxtWriteOutput.makeTextFile(scenarioName);
         //TxtWriteOutput.writeFileHeader(textFile, scenarioName);
 
-        //SaveScreenshots.getInstance(driver);
+        //SaveScreenshots.getInstance(driver.get());
         //screenshots_directory = SaveScreenshots.makeDirectory(scenarioName);
     }
 
@@ -77,7 +80,7 @@ public class GoogleSteps {
     public void afterScenario() throws IOException {
         System.out.println("afterScenario ran");
         spreadsheetOutput.get().writeFile();
-        driver.quit();
+        driver.get().quit();
     }
 
     @AfterStep
@@ -87,20 +90,20 @@ public class GoogleSteps {
 
     @Given("Google search is loaded")
     public void googleInstance() {
-        homePage = new GoogleHomePage(driver);
+        homePage = new GoogleHomePage(driver.get());
         homePage.navigate();
     }
 
     @When("I search for {string}")
     public void searchFor(String value) {
-        resultPage = new GoogleSearchResultPage(driver);
+        resultPage = new GoogleSearchResultPage(driver.get());
         this.valueName = value;
         homePage.search(this.valueName);
     }
 
     @When("I feel lucky about the term {string}")
     public void luckySearchFor(String value){
-        resultPage = new GoogleSearchResultPage(driver);
+        resultPage = new GoogleSearchResultPage(driver.get());
         this.valueName = value;
         homePage.search(this.valueName, true);
     }
