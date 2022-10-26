@@ -1,6 +1,6 @@
 package com.mauroooo.plugins;
 
-import io.cucumber.plugin.event.Node.Scenario;
+//import io.cucumber.plugin.event.Node.Scenario;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.EventPublisher;
 import io.cucumber.plugin.event.TestCase;
