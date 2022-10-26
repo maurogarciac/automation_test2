@@ -52,7 +52,7 @@ public class GoogleSteps {
         if(remoteProperty){
             System.out.println("Remote");
             String url = System.getProperty("hub_url");
-            DesiredCapabilities capabilities = new DesiredCapabilities(browserProperty, null, Platform.WIN10);
+            DesiredCapabilities capabilities = new DesiredCapabilities(browserProperty, null, null);
             //capabilities.setBrowserName(browserProperty);
             driver.set(new RemoteWebDriver(new URL(url), capabilities));
         } else {
